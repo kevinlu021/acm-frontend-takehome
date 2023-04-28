@@ -54,7 +54,9 @@ export default function EventCard({ event, cardMode, viewMode }: EventCardProps)
         className={style.eventCardContainer}
       >
         <img src={event.cover} className={style.eventCover} />
-        <input className={style.checkbox} type="checkbox" checked={attended} />
+        <input className={style.checkbox} type="checkbox" checked={attended}
+        onChange = {()=>{setAttended(!attended);}} //clicking checkbox will toggle attended status
+        />
         <div className={style.eventInfoContainer}>
           <p>{event.title}</p>
           <p className={style.eventDateTime}>
@@ -69,7 +71,9 @@ export default function EventCard({ event, cardMode, viewMode }: EventCardProps)
     return (
       <tr className={style.eventRowContainer}>
         <td className={style.checkboxCell}>
-          <input type="checkbox" checked={attended} />
+          <input type="checkbox" checked={attended} 
+          onChange = {()=>{setAttended(!attended);}} //clicking checkbox will toggle attended status
+        />
         </td>
         <td className={style.titleCell}>
           <a

@@ -10,13 +10,29 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'card' | 'row'>('card');
   const [eventMode, setEventMode] = useState<'all' | 'attended'>('all');
 
+  ////////////////
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const EVENTS_PER_PAGE = 25;
+  ////////////////
+
   useEffect(() => {
     const loadEvents = async () => {
       const response = await fetch('https://api.acmucsd.com/api/v2/event/past');
       const data: { error: any; events: Event[] } = await response.json();
       setDisplayEvents(data.events);
+      setCurrentPage(1); //trigger the below useEffect
     };
+    loadEvents(); //loadEvents was not called
   }, []);
+
+  //////////////////
+    useEffect(() => {
+      const startIndex = (currentPage - 1) * EVENTS_PER_PAGE;
+      const endIndex = startIndex + EVENTS_PER_PAGE;
+      const eventsToDisplay = displayEvents.slice(startIndex, endIndex);
+      setDisplayEvents(eventsToDisplay);
+  }, [currentPage]);
+  //////////////////
 
   return (
     <>
@@ -48,14 +64,14 @@ export default function Home() {
           <div className={style.viewModeBtns}>
             <button
               className={style.viewModeBtn}
-              onClick={() => setViewMode((mode) => mode)}
+              onClick={() => setViewMode(viewMode === 'card' ? 'row' : 'card')}
               data-mode={viewMode === 'card' ? 'active' : 'inactive'}
             >
               <GridIcon />
             </button>
             <button
               className={style.viewModeBtn}
-              onClick={() => setViewMode((mode) => mode)}
+              onClick={() => setViewMode(viewMode === 'card' ? 'row' : 'card')}
               data-mode={viewMode === 'row' ? 'active' : 'inactive'}
             >
               <RowIcon />
