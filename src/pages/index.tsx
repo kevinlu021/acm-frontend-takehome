@@ -4,35 +4,46 @@ import EventCard from '@/components/EventCard';
 import style from '../styles/Home.module.css';
 import GridIcon from '@/icons/GridIcon';
 import RowIcon from '@/icons/RowIcon';
+import LeftArrowIcon from '@/icons/LeftArrowIcon';
+import RightArrowIcon from '@/icons/RightArrowIcon';
 
 export default function Home() {
-  const [displayEvents, setDisplayEvents] = useState<Event[]>([]);
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [viewMode, setViewMode] = useState<'card' | 'row'>('card');
   const [eventMode, setEventMode] = useState<'all' | 'attended'>('all');
+  const [displayEvents, setDisplayEvents] = useState<Event[]>([]);
+
+
 
   ////////////////
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const EVENTS_PER_PAGE = 25;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(1);
   ////////////////
 
   useEffect(() => {
-    const loadEvents = async () => {
-      const response = await fetch('https://api.acmucsd.com/api/v2/event/past');
-      const data: { error: any; events: Event[] } = await response.json();
-      setDisplayEvents(data.events);
-      setCurrentPage(1); //trigger the below useEffect
-    };
-    loadEvents(); //loadEvents was not called
+      const loadEvents = async () => {
+        const response1 = await fetch('http://localhost:4000/api/firstEvents');
+        const data1: { error: any; page: number; events: Event[]; hasMore: boolean; } = await response1.json();
+        setAllEvents(data1.events);
+        setDisplayEvents(data1.events);
+        const response2 = await fetch('http://localhost:4000/api/events');
+        const data2: { error: any; page: number; events: Event[]; hasMore: boolean; } = await response2.json();
+        setAllEvents([...allEvents,...data2.events]);
+        setMaxPage(Math.ceil((data1.events.length+data2.events.length)/25));
+      };
+      loadEvents(); //loadEvents was not called
   }, []);
 
-  //////////////////
-    useEffect(() => {
-      const startIndex = (currentPage - 1) * EVENTS_PER_PAGE;
-      const endIndex = startIndex + EVENTS_PER_PAGE;
-      const eventsToDisplay = displayEvents.slice(startIndex, endIndex);
-      setDisplayEvents(eventsToDisplay);
-  }, [currentPage]);
-  //////////////////
+
+  function moveRight(){
+    setDisplayEvents(allEvents.slice((currentPage)*25,(currentPage+1)*25));
+    setCurrentPage(currentPage+1);
+  }
+
+  function moveLeft(){
+    setDisplayEvents(allEvents.slice((currentPage-2)*25,(currentPage-1)*25));
+    setCurrentPage(currentPage-1);
+  }
 
   return (
     <>
@@ -85,6 +96,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
+          <>
           <table className={style.rowContainer}>
             <tbody>
               <tr className={style.headerRow}>
@@ -98,7 +110,14 @@ export default function Home() {
               ))}
             </tbody>
           </table>
+          </>
         )}
+        {eventMode === "all" ? <div className={style.navbar}>
+        {currentPage !== 1 ? <button className={style.eventModeBtn} onClick = {moveLeft}><LeftArrowIcon/></button> : <button className={style.eventModeBtn} style={{ visibility: 'hidden', pointerEvents: 'none' }}><LeftArrowIcon/></button>}
+        <p>{currentPage} of {maxPage}</p>
+        {maxPage !== currentPage ? <button className={style.eventModeBtn} onClick={moveRight}><RightArrowIcon/></button> : <button className={style.eventModeBtn} style={{ visibility: 'hidden', pointerEvents: 'none' }}><LeftArrowIcon/></button>}
+        </div> : <></>
+        }
       </main>
     </>
   );

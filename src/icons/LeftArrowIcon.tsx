@@ -1,6 +1,6 @@
 export default function LeftArrowIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="44" height="44" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M11 16.5L11.9831 15.5423L8.14688 11.6875L16.5 11.6875L16.5 10.3125L8.14688 10.3125L11.9831 6.48106L11 5.5L5.5 11L11 16.5Z"
         fill="#C4C4C4"

@@ -1,6 +1,6 @@
 export default function RightArrowIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="44" height="44" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M11 5.5L10.0169 6.45769L13.8531 10.3125H5.5V11.6875H13.8531L10.0169 15.5189L11 16.5L16.5 11L11 5.5Z"
         fill="#C4C4C4"
