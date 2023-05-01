@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Event } from '../types';
 import EventCard from '@/components/EventCard';
 import style from '../styles/Home.module.css';
@@ -28,7 +28,7 @@ export default function Home() {
         setDisplayEvents(data1.events);
         const response2 = await fetch('http://localhost:4000/api/events');
         const data2: { error: any; page: number; events: Event[]; hasMore: boolean; } = await response2.json();
-        setAllEvents([...allEvents,...data2.events]);
+        setAllEvents(prevEvents => prevEvents.concat(data2.events));
         setMaxPage(Math.ceil((data1.events.length+data2.events.length)/25));
       };
       loadEvents(); //loadEvents was not called
@@ -36,15 +36,19 @@ export default function Home() {
 
 
   function moveRight(){
-    setDisplayEvents(allEvents.slice((currentPage)*25,(currentPage+1)*25));
     setCurrentPage(currentPage+1);
+    setDisplayEvents(allEvents.slice((currentPage) * 25, (currentPage+1) * 25));
   }
 
   function moveLeft(){
-    setDisplayEvents(allEvents.slice((currentPage-2)*25,(currentPage-1)*25));
     setCurrentPage(currentPage-1);
+    setDisplayEvents(allEvents.slice((currentPage-2) * 25, (currentPage-1) * 25));
   }
-
+  useEffect(()=>{
+    // console.log(currentPage);
+    // console.log(`events ${(currentPage-1)*25} to ${(currentPage)*25}`);
+    // console.log(allEvents.map(obj => obj.title));
+  },[currentPage])
   return (
     <>
       <nav>
@@ -91,9 +95,13 @@ export default function Home() {
         </div>
         {viewMode === 'card' ? (
           <div className={style.cardContainer}>
-            {displayEvents.map((event) => (
+            { eventMode === 'all' ?
+            displayEvents.map((event) => (
               <EventCard cardMode={eventMode} viewMode={viewMode} key={event.uuid} event={event} />
-            ))}
+            )) : allEvents.map((event) => (
+              <EventCard cardMode={eventMode} viewMode={viewMode} key={event.uuid} event={event} />
+            ))
+            }
           </div>
         ) : (
           <>
